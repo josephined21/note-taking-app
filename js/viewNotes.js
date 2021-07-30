@@ -15,26 +15,31 @@ window.onload = event => {
 };
 
 const getNotes = userId => {
-  const notesRef = firebase.database().ref(`users/${userId}`).orderByChild('title');
+  const notesRef = firebase.database().ref(`users/${userId}`);
   // notesRef.orderBy("title")
   // var myUserId = firebase.auth().currentUser.uid;
   // var topUserPostsRef = firebase.database().ref('user-posts/' + myUserId).orderByChild('starCount');
   // var notesRef = firebase.database().ref('')
   
-  notesRef.on("value", snapshot => {
+  notesRef.orderByChild('title').on("value", snapshot => {
   // snapshot.forEach( => {
-    const data = snapshot.val();
-    renderDataAsHtml(data);
+    //const data = snapshot.val();
+    renderDataAsHtml(snapshot);
   });
 };
 
 const renderDataAsHtml = data => {
   let cards = ``;
-  for (const noteItem in data) {
-    const note = data[noteItem];
+  // for (const noteItem in data) {
+  data.forEach((child) => {
+    // const note = data[noteItem];
+    const note = child.val();
+    console.log(note);
+    const noteKey = child.key;
     // For each note create an HTML card
-    cards += createCard(note, noteItem);
-  }
+    // cards += createCard(note, noteItem);
+    cards += createCard(note, noteKey);
+  })
   // Inject our string of HTML into our viewNotes.html page
   document.querySelector("#app").innerHTML = cards;
 };
